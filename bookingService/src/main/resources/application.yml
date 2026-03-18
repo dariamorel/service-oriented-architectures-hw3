@@ -1,0 +1,14 @@
+service:
+  name: booking-service
+  port: ${REST_PORT:8080}
+
+database:
+  host: ${BOOKING_DB_HOST:localhost}
+  port: ${BOOKING_DB_PORT:5432}
+  name: ${BOOKING_DB_NAME:booking}
+  user: ${BOOKING_DB_USER:postgres}
+  password: ${BOOKING_DB_PASSWORD:postgres}
+
+flight-service:
+  host: ${FLIGHT_SERVICE_HOST:localhost}
+  port: ${FLIGHT_SERVICE_PORT:50051}

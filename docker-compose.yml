@@ -1,14 +1,15 @@
 services:
   flight-db:
     image: postgres:16-alpine
+    container_name: flight-db
     environment:
-      POSTGRES_DB: flights
+      POSTGRES_DB: flight
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
     ports:
       - "5433:5432"
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres -d flights"]
+      test: ["CMD-SHELL", "pg_isready -U postgres -d flight"]
       interval: 5s
       timeout: 5s
       retries: 10
@@ -17,6 +18,7 @@ services:
 
   booking-db:
     image: postgres:16-alpine
+    container_name: booking-db
     environment:
       POSTGRES_DB: booking
       POSTGRES_USER: postgres
@@ -33,6 +35,7 @@ services:
 
   redis:
     image: redis:7-alpine
+    container_name: redis
     ports:
       - "6379:6379"
     healthcheck:
@@ -43,12 +46,18 @@ services:
 
   flight-service:
     build:
-      context: ./flight-service
+      context: .
+      dockerfile: flightService/Dockerfile
+    container_name: flight-service
     environment:
-      DATABASE_URL: "postgres://postgres:postgres@flight-db:5432/flights?sslmode=disable"
+      FLIGHT_DB_HOST: flight-db
+      FLIGHT_DB_PORT: "5432"
+      FLIGHT_DB_NAME: flight
+      FLIGHT_DB_USER: postgres
+      FLIGHT_DB_PASSWORD: postgres
+      REDIS_HOST: redis
+      REDIS_PORT: "6379"
       GRPC_PORT: "50051"
-      REDIS_URL: "redis://redis:6379"
-      API_KEY: "secret-key"
     ports:
       - "50051:50051"
     depends_on:
@@ -59,15 +68,20 @@ services:
 
   booking-service:
     build:
-      context: ./booking-service
+      context: .
+      dockerfile: bookingService/Dockerfile
+    container_name: booking-service
     environment:
-      DATABASE_URL: "postgres://postgres:postgres@booking-db:5432/booking?sslmode=disable"
-      FLIGHT_SERVICE_URL: "flight-service:50051"
-      API_KEY: "secret-key"
-      CB_FAILURE_THRESHOLD: "5"
-      CB_RECOVERY_TIMEOUT: "30"
+      BOOKING_DB_HOST: booking-db
+      BOOKING_DB_PORT: "5432"
+      BOOKING_DB_NAME: booking
+      BOOKING_DB_USER: postgres
+      BOOKING_DB_PASSWORD: postgres
+      FLIGHT_SERVICE_HOST: flight-service
+      FLIGHT_SERVICE_PORT: "50051"
+      REST_PORT: "8080"
     ports:
-      - "8000:8000"
+      - "8080:8080"
     depends_on:
       booking-db:
         condition: service_healthy

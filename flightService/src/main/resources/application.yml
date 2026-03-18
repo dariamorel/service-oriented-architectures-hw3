@@ -1,0 +1,14 @@
+service:
+  name: flight-service
+  port: ${GRPC_PORT:50051}
+
+database:
+  host: ${FLIGHT_DB_HOST:localhost}
+  port: ${FLIGHT_DB_PORT:5432}
+  name: ${FLIGHT_DB_NAME:flight}
+  user: ${FLIGHT_DB_USER:postgres}
+  password: ${FLIGHT_DB_PASSWORD:postgres}
+
+redis:
+  host: ${REDIS_HOST:localhost}
+  port: ${REDIS_PORT:6379}
