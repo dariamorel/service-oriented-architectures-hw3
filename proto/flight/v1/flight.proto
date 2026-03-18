@@ -1,0 +1,95 @@
+syntax = "proto3";
+
+package flight.v1;
+
+option java_multiple_files = true;
+option java_outer_classname = "FlightServiceProto";
+option java_package = "com.example.flight.v1";
+
+import "google/protobuf/timestamp.proto";
+
+service FlightService {
+  rpc SearchFlights(SearchFlightsRequest) returns (SearchFlightsResponse);
+  rpc GetFlight(GetFlightRequest) returns (GetFlightResponse);
+  rpc ReserveSeats(ReserveSeatsRequest) returns (ReserveSeatsResponse);
+  rpc ReleaseReservation(ReleaseReservationRequest) returns (ReleaseReservationResponse);
+}
+
+enum FlightStatus {
+  SCHEDULED = 0;
+  DEPARTED = 1;
+  CANCELLED = 2;
+  COMPLETED = 3;
+}
+
+enum SeatReservationStatus {
+  ACTIVE = 0;
+  RELEASED = 1;
+  EXPIRED = 2;
+}
+
+message FlightId {
+  string flight_number = 1;
+  google.protobuf.Timestamp departure_date = 2;
+}
+
+message Flight {
+  FlightId id = 1;
+  string airline = 2;
+  string departure_airport_iata = 3;
+  string arrival_airport_iata = 4;
+  google.protobuf.Timestamp departure_time = 5;
+  google.protobuf.Timestamp arrival_time = 6;
+  uint32 total_seats = 7;
+  uint32 available_seats = 8;
+  int64 ticket_price = 9;
+  FlightStatus status = 10;
+}
+
+message SeatReservation {
+  string reservation_id = 1;
+  FlightId flight_id = 2;
+  string booking_id = 3;
+  uint32 reserved_seats = 4;
+  SeatReservationStatus status = 5;
+  google.protobuf.Timestamp created_at = 6;
+  google.protobuf.Timestamp released_at = 7;
+}
+
+message SearchFlightsRequest {
+  string departure_airport_iata = 1;
+  string arrival_airport_iata = 2;
+  google.protobuf.Timestamp departure_date = 3;
+}
+
+message SearchFlightsResponse {
+  repeated Flight flights = 1;
+}
+
+message GetFlightRequest {
+  FlightId flight_id = 1;
+}
+
+message GetFlightResponse {
+  Flight flight = 1;
+}
+
+message ReserveSeatsRequest {
+  FlightId flight_id = 1;
+  string booking_id = 2;
+  uint32 seat_count = 3;
+}
+
+message ReserveSeatsResponse {
+  SeatReservation reservation = 1;
+}
+
+message ReleaseReservationRequest {
+  string booking_id = 1;
+  string reservation_id = 2;
+  FlightId flight_id = 3;
+}
+
+message ReleaseReservationResponse {
+  SeatReservation reservation = 1;
+}
