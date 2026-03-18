@@ -28,27 +28,24 @@ enum SeatReservationStatus {
   EXPIRED = 2;
 }
 
-message FlightId {
-  string flight_number = 1;
-  google.protobuf.Timestamp departure_date = 2;
-}
-
 message Flight {
-  FlightId id = 1;
-  string airline = 2;
-  string departure_airport_iata = 3;
-  string arrival_airport_iata = 4;
-  google.protobuf.Timestamp departure_time = 5;
-  google.protobuf.Timestamp arrival_time = 6;
-  uint32 total_seats = 7;
-  uint32 available_seats = 8;
-  int64 ticket_price = 9;
-  FlightStatus status = 10;
+  string flight_id = 1;
+  string flight_number = 2;
+  google.protobuf.Timestamp departure_date = 3;
+  string airline = 4;
+  string departure_airport_iata = 5;
+  string arrival_airport_iata = 6;
+  google.protobuf.Timestamp departure_time = 7;
+  google.protobuf.Timestamp arrival_time = 8;
+  uint32 total_seats = 9;
+  uint32 available_seats = 10;
+  int64 ticket_price = 11;
+  FlightStatus status = 12;
 }
 
 message SeatReservation {
   string reservation_id = 1;
-  FlightId flight_id = 2;
+  string flight_id = 2;
   string booking_id = 3;
   uint32 reserved_seats = 4;
   SeatReservationStatus status = 5;
@@ -67,7 +64,7 @@ message SearchFlightsResponse {
 }
 
 message GetFlightRequest {
-  FlightId flight_id = 1;
+  string flight_id = 1;
 }
 
 message GetFlightResponse {
@@ -75,7 +72,7 @@ message GetFlightResponse {
 }
 
 message ReserveSeatsRequest {
-  FlightId flight_id = 1;
+  string flight_id = 1;
   string booking_id = 2;
   uint32 seat_count = 3;
 }
@@ -87,7 +84,7 @@ message ReserveSeatsResponse {
 message ReleaseReservationRequest {
   string booking_id = 1;
   string reservation_id = 2;
-  FlightId flight_id = 3;
+  string flight_id = 3;
 }
 
 message ReleaseReservationResponse {

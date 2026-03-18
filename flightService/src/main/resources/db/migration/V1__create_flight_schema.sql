@@ -3,10 +3,10 @@ CREATE EXTENSION IF NOT EXISTS pgcrypto;
 CREATE TABLE flights (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     flight_number VARCHAR(16) NOT NULL,
-    departure_date DATE NOT NULL,
+    departure_date TIMESTAMPTZ NOT NULL,
     airline VARCHAR(120) NOT NULL,
-    departure_airport_iata CHAR(3) NOT NULL,
-    arrival_airport_iata CHAR(3) NOT NULL,
+    departure_airport_iata VARCHAR(3) NOT NULL,
+    arrival_airport_iata VARCHAR(3) NOT NULL,
     departure_time TIMESTAMPTZ NOT NULL,
     arrival_time TIMESTAMPTZ NOT NULL,
     total_seats INTEGER NOT NULL CHECK (total_seats > 0),

@@ -1,14 +1,20 @@
 FROM flyway/flyway:10-alpine AS flyway
 
-FROM eclipse-temurin:24-jdk AS builder
+FROM eclipse-temurin:21-jdk AS builder
 
 WORKDIR /workspace
 
+ENV GRADLE_USER_HOME=/workspace/.gradle
+
+ENV GRADLE_OPTS="-Dorg.gradle.internal.http.connectionTimeout=600000 -Dorg.gradle.internal.http.socketTimeout=600000"
+
 COPY . .
 
-RUN chmod +x ./gradlew && ./gradlew :flightService:generateProto :flightService:installDist --no-daemon
+RUN chmod +x ./gradlew
+RUN ./gradlew :flightService:generateProto
+RUN ./gradlew :flightService:installDist --no-daemon
 
-FROM eclipse-temurin:24-jre
+FROM eclipse-temurin:21-jre
 
 WORKDIR /app
 

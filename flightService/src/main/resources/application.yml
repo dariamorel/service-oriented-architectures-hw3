@@ -2,12 +2,15 @@ service:
   name: flight-service
   port: ${GRPC_PORT:50051}
 
-database:
-  host: ${FLIGHT_DB_HOST:localhost}
-  port: ${FLIGHT_DB_PORT:5432}
-  name: ${FLIGHT_DB_NAME:flight}
-  user: ${FLIGHT_DB_USER:postgres}
-  password: ${FLIGHT_DB_PASSWORD:postgres}
+spring:
+  datasource:
+    url: jdbc:postgresql://${FLIGHT_DB_HOST:localhost}:${FLIGHT_DB_PORT:5433}/${FLIGHT_DB_NAME:flight}?ssl=false
+    username: ${FLIGHT_DB_USER:postgres}
+    password: ${FLIGHT_DB_PASSWORD:postgres}
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    open-in-view: false
 
 redis:
   host: ${REDIS_HOST:localhost}

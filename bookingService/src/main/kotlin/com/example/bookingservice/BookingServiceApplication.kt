@@ -1,6 +1,11 @@
 package com.example.bookingservice
 
-import java.util.concurrent.CountDownLatch
+import org.springframework.boot.autoconfigure.SpringBootApplication
+import org.springframework.boot.runApplication
 
-fun main() {
+@SpringBootApplication
+open class BookingServiceApplication
+
+fun main(args: Array<String>) {
+    runApplication<BookingServiceApplication>(*args)
 }

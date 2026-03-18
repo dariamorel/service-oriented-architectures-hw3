@@ -55,8 +55,6 @@ services:
       FLIGHT_DB_NAME: flight
       FLIGHT_DB_USER: postgres
       FLIGHT_DB_PASSWORD: postgres
-      REDIS_HOST: redis
-      REDIS_PORT: "6379"
       GRPC_PORT: "50051"
     ports:
       - "50051:50051"

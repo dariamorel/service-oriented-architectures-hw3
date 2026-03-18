@@ -1,0 +1,59 @@
+INSERT INTO flights (
+    id,
+    flight_number,
+    departure_date,
+    airline,
+    departure_airport_iata,
+    arrival_airport_iata,
+    departure_time,
+    arrival_time,
+    total_seats,
+    available_seats,
+    ticket_price,
+    status
+)
+VALUES
+    (
+        '11111111-1111-1111-1111-111111111111',
+        'SU-100',
+        '2026-04-01T00:00:00Z',
+        'Aeroflot',
+        'SVO',
+        'LED',
+        '2026-04-01T07:00:00Z',
+        '2026-04-01T08:30:00Z',
+        180,
+        180,
+        5000,
+        'SCHEDULED'
+    ),
+    (
+        '22222222-2222-2222-2222-222222222222',
+        'DP-200',
+        '2026-04-01T00:00:00Z',
+        'Pobeda',
+        'LED',
+        'SVO',
+        '2026-04-01T18:00:00Z',
+        '2026-04-01T19:35:00Z',
+        189,
+        10,
+        3500,
+        'SCHEDULED'
+    ),
+    (
+        '33333333-3333-3333-3333-333333333333',
+        'UT-300',
+        '2026-04-02T00:00:00Z',
+        'UTair',
+        'VKO',
+        'KZN',
+        '2026-04-02T09:15:00Z',
+        '2026-04-02T10:45:00Z',
+        150,
+        0,
+        4200,
+        'SCHEDULED'
+    )
+ON CONFLICT (id) DO NOTHING;
+
