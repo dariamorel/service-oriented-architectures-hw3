@@ -1,0 +1,17 @@
+server:
+  port: ${REST_PORT:8080}
+
+spring:
+  datasource:
+    url: jdbc:postgresql://${BOOKING_DB_HOST:localhost}:${BOOKING_DB_PORT:5434}/${BOOKING_DB_NAME:booking}?ssl=false
+    username: ${BOOKING_DB_USER:postgres}
+    password: ${BOOKING_DB_PASSWORD:postgres}
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    open-in-view: false
+
+grpc:
+  flight:
+    host: ${FLIGHT_SERVICE_HOST:localhost}
+    port: ${FLIGHT_SERVICE_PORT:50051}

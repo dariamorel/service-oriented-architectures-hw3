@@ -1,0 +1,236 @@
+openapi: 3.0.3
+info:
+  title: Booking API
+  version: "1.0"
+tags:
+  - name: flights
+  - name: bookings
+
+paths:
+  /flights:
+    get:
+      tags: [flights]
+      operationId: searchFlights
+      parameters:
+        - name: origin
+          in: query
+          required: true
+          schema: { type: string }
+        - name: destination
+          in: query
+          required: true
+          schema: { type: string }
+        - name: date
+          in: query
+          required: false
+          schema:
+            type: string
+            format: date
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/FlightResponse"
+
+  /flights/{id}:
+    get:
+      tags: [flights]
+      operationId: getFlight
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FlightResponse"
+        "404":
+          description: Not found
+
+  /bookings:
+    get:
+      tags: [bookings]
+      operationId: listBookings
+      parameters:
+        - name: user_id
+          in: query
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/BookingResponse"
+    post:
+      tags: [bookings]
+      operationId: createBooking
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateBookingRequest"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BookingResponse"
+        "400":
+          description: Bad request
+        "404":
+          description: Flight not found
+        "409":
+          description: Not enough seats or conflict
+
+  /bookings/{id}:
+    get:
+      tags: [bookings]
+      operationId: getBooking
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BookingResponse"
+        "404":
+          description: Not found
+
+  /bookings/{id}/cancel:
+    post:
+      tags: [bookings]
+      operationId: cancelBooking
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Cancelled
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BookingResponse"
+        "404":
+          description: Not found
+
+components:
+  schemas:
+    FlightResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        flightNumber:
+          type: string
+        departureDate:
+          type: string
+          format: date-time
+        airline:
+          type: string
+        origin:
+          type: string
+        destination:
+          type: string
+        departureTime:
+          type: string
+          format: date-time
+        arrivalTime:
+          type: string
+          format: date-time
+        totalSeats:
+          type: integer
+          format: int32
+        availableSeats:
+          type: integer
+          format: int32
+        ticketPrice:
+          type: integer
+          format: int64
+        status:
+          type: string
+          enum: [SCHEDULED, DEPARTED, CANCELLED, COMPLETED]
+
+    CreateBookingRequest:
+      type: object
+      required: [user_id, flight_id, passenger_name, passenger_email, seat_count]
+      properties:
+        user_id:
+          type: string
+          format: uuid
+        flight_id:
+          type: string
+          format: uuid
+        passenger_name:
+          type: string
+        passenger_email:
+          type: string
+          format: email
+        seat_count:
+          type: integer
+          format: int32
+          minimum: 1
+
+    BookingResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        userId:
+          type: string
+          format: uuid
+        flightId:
+          type: string
+          format: uuid
+        flightNumber:
+          type: string
+        flightDepartureInstant:
+          type: string
+          format: date-time
+        passengerName:
+          type: string
+        passengerEmail:
+          type: string
+          format: email
+        seatCount:
+          type: integer
+          format: int32
+        totalPrice:
+          type: integer
+          format: int64
+        reservationId:
+          type: string
+          format: uuid
+        status:
+          type: string
+          enum: [CONFIRMED, CANCELLED]
