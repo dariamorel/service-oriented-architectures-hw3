@@ -16,3 +16,9 @@ subprojects {
     group = rootProject.group
     version = rootProject.version
 }
+
+tasks.register("integrationTest") {
+    group = "verification"
+    description = "Runs integration tests for all services"
+    dependsOn(":bookingService:integrationTest")
+}

@@ -58,6 +58,42 @@ sourceSets {
             srcDir(layout.buildDirectory.dir("generated/openapi/src/main/java"))
         }
     }
+    create("integrationTest") {
+        kotlin {
+            srcDir("src/integrationTest/kotlin")
+        }
+        resources {
+            srcDir("src/integrationTest/resources")
+        }
+        compileClasspath += sourceSets["main"].output + configurations["testRuntimeClasspath"]
+        runtimeClasspath += output + compileClasspath
+    }
+}
+
+configurations["integrationTestImplementation"].extendsFrom(configurations["testImplementation"])
+configurations["integrationTestRuntimeOnly"].extendsFrom(configurations["testRuntimeOnly"])
+
+dependencyManagement {
+    imports {
+        mavenBom("org.testcontainers:testcontainers-bom:2.0.5")
+    }
+}
+
+dependencies {
+    add("integrationTestImplementation", project(":flightService"))
+    add("integrationTestImplementation", "org.testcontainers:junit-jupiter")
+    add("integrationTestImplementation", "org.testcontainers:postgresql")
+    add("integrationTestRuntimeOnly", "org.postgresql:postgresql")
+}
+
+tasks.register<Test>("integrationTest") {
+    description = "Runs integration tests."
+    group = "verification"
+
+    testClassesDirs = sourceSets["integrationTest"].output.classesDirs
+    classpath = sourceSets["integrationTest"].runtimeClasspath
+    shouldRunAfter(tasks.test)
+    useJUnitPlatform()
 }
 
 tasks.openApiGenerate {
