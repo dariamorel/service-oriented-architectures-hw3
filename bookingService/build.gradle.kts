@@ -28,6 +28,8 @@ dependencies {
     implementation("javax.annotation:javax.annotation-api:1.3.2")
 
     testImplementation("org.springframework.boot:spring-boot-starter-test")
+    testImplementation("org.mockito.kotlin:mockito-kotlin:5.4.0")
+    testImplementation("io.mockk:mockk:1.13.13")
     testImplementation(kotlin("test"))
 }
 
