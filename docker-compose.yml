@@ -33,6 +33,24 @@ services:
     volumes:
       - booking-db-data:/var/lib/postgresql/data
 
+  booking-db-exporter:
+    image: prometheuscommunity/postgres-exporter:v0.15.0
+    container_name: booking-db-exporter
+    environment:
+      DATA_SOURCE_NAME: postgresql://postgres:postgres@booking-db:5432/booking?sslmode=disable
+    depends_on:
+      booking-db:
+        condition: service_healthy
+
+  flight-db-exporter:
+    image: prometheuscommunity/postgres-exporter:v0.15.0
+    container_name: flight-db-exporter
+    environment:
+      DATA_SOURCE_NAME: postgresql://postgres:postgres@flight-db:5432/flight?sslmode=disable
+    depends_on:
+      flight-db:
+        condition: service_healthy
+
   redis:
     image: redis:7-alpine
     container_name: redis
@@ -98,6 +116,8 @@ services:
     depends_on:
       - booking-service
       - flight-service
+      - booking-db-exporter
+      - flight-db-exporter
 
   grafana:
     image: grafana/grafana:11.3.0

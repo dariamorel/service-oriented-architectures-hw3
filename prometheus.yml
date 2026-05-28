@@ -11,3 +11,11 @@ scrape_configs:
     metrics_path: /metrics
     static_configs:
       - targets: ["flight-service:8081"]
+
+  - job_name: booking-db
+    static_configs:
+      - targets: ["booking-db-exporter:9187"]
+
+  - job_name: flight-db
+    static_configs:
+      - targets: ["flight-db-exporter:9187"]

@@ -1,0 +1,90 @@
+{
+  "uid": "infrastructure-dashboard",
+  "title": "Infrastructure Dashboard",
+  "tags": ["infrastructure"],
+  "timezone": "browser",
+  "schemaVersion": 39,
+  "version": 1,
+  "refresh": "5s",
+  "time": {
+    "from": "now-15m",
+    "to": "now"
+  },
+  "panels": [
+    {
+      "id": 1,
+      "type": "timeseries",
+      "title": "PostgreSQL Active Connections",
+      "gridPos": { "h": 8, "w": 24, "x": 0, "y": 0 },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "pg_stat_database_numbackends{job=\"booking-db\"}",
+          "legendFormat": "booking-db"
+        },
+        {
+          "refId": "B",
+          "expr": "pg_stat_database_numbackends{job=\"flight-db\"}",
+          "legendFormat": "flight-db"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": []
+      }
+    },
+    {
+      "id": 2,
+      "type": "timeseries",
+      "title": "PostgreSQL Cache Hit Ratio",
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 8 },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "rate(pg_stat_database_blks_hit{job=\"booking-db\"}[1m]) / (rate(pg_stat_database_blks_hit{job=\"booking-db\"}[1m]) + rate(pg_stat_database_blks_read{job=\"booking-db\"}[1m]))",
+          "legendFormat": "booking-db"
+        },
+        {
+          "refId": "B",
+          "expr": "rate(pg_stat_database_blks_hit{job=\"flight-db\"}[1m]) / (rate(pg_stat_database_blks_hit{job=\"flight-db\"}[1m]) + rate(pg_stat_database_blks_read{job=\"flight-db\"}[1m]))",
+          "legendFormat": "flight-db"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percentunit",
+          "min": 0,
+          "max": 1
+        },
+        "overrides": []
+      }
+    },
+    {
+      "id": 3,
+      "type": "timeseries",
+      "title": "PostgreSQL Transactions/sec",
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 8 },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "rate(pg_stat_database_xact_commit{job=\"booking-db\"}[1m]) + rate(pg_stat_database_xact_rollback{job=\"booking-db\"}[1m])",
+          "legendFormat": "booking-db"
+        },
+        {
+          "refId": "B",
+          "expr": "rate(pg_stat_database_xact_commit{job=\"flight-db\"}[1m]) + rate(pg_stat_database_xact_rollback{job=\"flight-db\"}[1m])",
+          "legendFormat": "flight-db"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "ops"
+        },
+        "overrides": []
+      }
+    }
+  ]
+}
