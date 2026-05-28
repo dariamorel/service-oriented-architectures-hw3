@@ -56,8 +56,10 @@ services:
       FLIGHT_DB_USER: postgres
       FLIGHT_DB_PASSWORD: postgres
       GRPC_PORT: "50051"
+      METRICS_PORT: "8081"
     ports:
       - "50051:50051"
+      - "8081:8081"
     depends_on:
       flight-db:
         condition: service_healthy
@@ -85,6 +87,31 @@ services:
         condition: service_healthy
       flight-service:
         condition: service_started
+
+  prometheus:
+    image: prom/prometheus:v2.55.1
+    container_name: prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml:ro
+    depends_on:
+      - booking-service
+      - flight-service
+
+  grafana:
+    image: grafana/grafana:11.3.0
+    container_name: grafana
+    ports:
+      - "3000:3000"
+    environment:
+      GF_SECURITY_ADMIN_USER: admin
+      GF_SECURITY_ADMIN_PASSWORD: admin
+    volumes:
+      - ./grafana/provisioning:/etc/grafana/provisioning:ro
+      - ./grafana/dashboards:/var/lib/grafana/dashboards:ro
+    depends_on:
+      - prometheus
 
 volumes:
   flight-db-data:

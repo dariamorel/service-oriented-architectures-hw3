@@ -19,6 +19,8 @@ dependencies {
     implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.6.0")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
     implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310")
+    implementation("io.prometheus:simpleclient:0.16.0")
+    implementation("io.prometheus:simpleclient_common:0.16.0")
     runtimeOnly("org.postgresql:postgresql")
 
     implementation("io.grpc:grpc-kotlin-stub:1.4.1")
