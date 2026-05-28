@@ -22,3 +22,9 @@ tasks.register("integrationTest") {
     description = "Runs integration tests for all services"
     dependsOn(":bookingService:integrationTest")
 }
+
+tasks.register<Exec>("e2eTest") {
+    group = "verification"
+    description = "Runs the end-to-end booking flow against docker compose"
+    commandLine("bash", "tests/e2e/booking-flow.sh")
+}
