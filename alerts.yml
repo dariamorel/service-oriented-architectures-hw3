@@ -1,0 +1,30 @@
+groups:
+  - name: booking-service-alerts
+    rules:
+      - alert: HighErrorRate
+        expr: |
+          (
+            sum(rate(http_request_errors_total{job="booking-service"}[1m]))
+            /
+            sum(rate(http_requests_total{job="booking-service"}[1m]))
+          ) > 0.05
+          and sum(rate(http_requests_total{job="booking-service"}[1m])) > 0
+        for: 1m
+        labels:
+          severity: warning
+        annotations:
+          summary: High error rate on booking-service
+          description: Error rate is above 5% for the last minute.
+
+      - alert: HighLatency
+        expr: |
+          histogram_quantile(
+            0.95,
+            sum by (le) (rate(http_request_duration_seconds_bucket{job="booking-service"}[1m]))
+          ) > 1
+        for: 1m
+        labels:
+          severity: warning
+        annotations:
+          summary: High p95 latency on booking-service
+          description: p95 latency is above 1s for the last minute.
