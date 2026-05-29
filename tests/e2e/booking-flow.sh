@@ -12,12 +12,10 @@ PASSENGER_EMAIL="e2e.passenger@example.com"
 SEAT_COUNT=2
 EXPECTED_TOTAL_PRICE=10000
 
-CREATE_RESPONSE="$(mktemp)"
-GET_RESPONSE="$(mktemp)"
-CANCEL_RESPONSE="$(mktemp)"
+RESPONSE="$(mktemp)"
 
 cleanup_files() {
-    rm -f "$CREATE_RESPONSE" "$GET_RESPONSE" "$CANCEL_RESPONSE"
+    rm -f "$RESPONSE"
 }
 trap cleanup_files EXIT
 
@@ -86,7 +84,7 @@ reset_test_state() {
 }
 
 validate_create_response() {
-    python3 - "$CREATE_RESPONSE" "$USER_ID" "$FLIGHT_ID" "$SEAT_COUNT" "$EXPECTED_TOTAL_PRICE" <<'PY'
+    python3 - "$1" "$USER_ID" "$FLIGHT_ID" "$SEAT_COUNT" "$EXPECTED_TOTAL_PRICE" <<'PY'
 import json
 import sys
 import uuid
@@ -111,7 +109,7 @@ PY
 }
 
 validate_get_response() {
-    python3 - "$GET_RESPONSE" "$1" <<'PY'
+    python3 - "$1" "$2" <<'PY'
 import json
 import sys
 
@@ -126,7 +124,7 @@ PY
 }
 
 validate_cancel_response() {
-    python3 - "$CANCEL_RESPONSE" "$1" <<'PY'
+    python3 - "$1" "$2" <<'PY'
 import json
 import sys
 
@@ -170,7 +168,7 @@ PY
 
 log "Creating booking through REST API"
 CREATE_STATUS="$(
-    curl -sS -o "$CREATE_RESPONSE" -w '%{http_code}' \
+    curl -sS -o "$RESPONSE" -w '%{http_code}' \
         -H 'Content-Type: application/json' \
         -d "{
               \"user_id\": \"$USER_ID\",
@@ -182,15 +180,15 @@ CREATE_STATUS="$(
         "$API_URL/bookings"
 )"
 expect_equal "$CREATE_STATUS" "201" "POST /bookings status"
-validate_create_response
+validate_create_response "$RESPONSE"
 
-BOOKING_ID="$(extract_json_field "$CREATE_RESPONSE" "id")"
-RESERVATION_ID="$(extract_json_field "$CREATE_RESPONSE" "reservationId")"
+BOOKING_ID="$(extract_json_field "$RESPONSE" "id")"
+RESERVATION_ID="$(extract_json_field "$RESPONSE" "reservationId")"
 
 log "Reading created booking through REST API"
-GET_STATUS="$(curl -sS -o "$GET_RESPONSE" -w '%{http_code}' "$API_URL/bookings/$BOOKING_ID")"
+GET_STATUS="$(curl -sS -o "$RESPONSE" -w '%{http_code}' "$API_URL/bookings/$BOOKING_ID")"
 expect_equal "$GET_STATUS" "200" "GET /bookings/{id} status"
-validate_get_response "$BOOKING_ID"
+validate_get_response "$RESPONSE" "$BOOKING_ID"
 
 log "Checking booking and reservation in databases"
 expect_equal "$(booking_sql "select status from bookings where id = '$BOOKING_ID';")" "CONFIRMED" "booking status in booking-db"
@@ -200,9 +198,9 @@ expect_equal "$(flight_sql "select available_seats from flights where id = '$FLI
 expect_equal "$(flight_sql "select status from seat_reservations where id = '$RESERVATION_ID' and booking_id = '$BOOKING_ID';")" "ACTIVE" "reservation status in flight-db"
 
 log "Cancelling booking through REST API"
-CANCEL_STATUS="$(curl -sS -o "$CANCEL_RESPONSE" -w '%{http_code}' -X POST "$API_URL/bookings/$BOOKING_ID/cancel")"
+CANCEL_STATUS="$(curl -sS -o "$RESPONSE" -w '%{http_code}' -X POST "$API_URL/bookings/$BOOKING_ID/cancel")"
 expect_equal "$CANCEL_STATUS" "200" "POST /bookings/{id}/cancel status"
-validate_cancel_response "$BOOKING_ID"
+validate_cancel_response "$RESPONSE" "$BOOKING_ID"
 
 log "Checking cancelled booking and released reservation in databases"
 expect_equal "$(booking_sql "select status from bookings where id = '$BOOKING_ID';")" "CANCELLED" "cancelled booking status in booking-db"
