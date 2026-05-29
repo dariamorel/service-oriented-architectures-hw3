@@ -147,8 +147,10 @@ print(json.load(open(path))[field])
 PY
 }
 
-log "Starting full system with docker compose"
-compose up --build -d --wait
+if [[ "${SKIP_COMPOSE_UP:-false}" != "true" ]]; then
+    log "Starting full system with docker compose"
+    compose up --build -d --wait
+fi
 
 wait_for_api
 reset_test_state
